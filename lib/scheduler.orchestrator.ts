@@ -68,10 +68,6 @@ export class SchedulerOrchestrator
     cronKeys.forEach((key) => {
       const { options, target } = this.cronJobs[key];
 
-      if (options.disabled) {
-        return;
-      }
-
       const cronJob = new CronJob(
         options.cronTime,
         target as any,
@@ -83,7 +79,10 @@ export class SchedulerOrchestrator
         options.utcOffset,
         options.unrefTimeout,
       );
-      cronJob.start();
+  
+      if (!options.disabled) {
+        cronJob.start();
+      }
 
       this.cronJobs[key].ref = cronJob;
       this.schedulerRegistry.addCronJob(key, cronJob);
